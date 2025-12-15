@@ -100,16 +100,12 @@ export default function Register() {
           <div className="form-group">
             <label className="label">Work Start Time</label>
             <div style={{display: 'flex', gap: '10px'}}>
-              <select
+              <input
+                type="time"
                 className="input"
                 value={formData.workStartTime}
                 onChange={(e) => handleChange('workStartTime', e.target.value)}
-              >
-                {Array.from({length: 12}, (_, i) => {
-                  const hour = i + 1;
-                  return <option key={hour} value={`${hour}:00`}>{hour}:00</option>;
-                })}
-              </select>
+              />
               <select
                 className="input"
                 value={formData.workStartPeriod}
@@ -124,16 +120,12 @@ export default function Register() {
           <div className="form-group">
             <label className="label">Work End Time</label>
             <div style={{display: 'flex', gap: '10px'}}>
-              <select
+              <input
+                type="time"
                 className="input"
                 value={formData.workEndTime}
                 onChange={(e) => handleChange('workEndTime', e.target.value)}
-              >
-                {Array.from({length: 12}, (_, i) => {
-                  const hour = i + 1;
-                  return <option key={hour} value={`${hour}:00`}>{hour}:00</option>;
-                })}
-              </select>
+              />
               <select
                 className="input"
                 value={formData.workEndPeriod}
