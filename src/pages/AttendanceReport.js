@@ -11,10 +11,26 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 export default function AttendanceReport() {
   const [attendanceData, setAttendanceData] = useState([]);
+  const [usersData, setUsersData] = useState({});
 
   useEffect(() => {
     fetchAllAttendance();
+    fetchUsersData();
   }, []);
+
+  const fetchUsersData = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'users'));
+      const users = {};
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        users[userData.email] = userData;
+      });
+      setUsersData(users);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    }
+  };
 
   const fetchAllAttendance = async () => {
     try {
@@ -58,11 +74,11 @@ export default function AttendanceReport() {
           <h2>Filter Records</h2>
           <div className="grid" style={{gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px'}}>
             <div className="form-group">
-              <label className="label">Employee Name</label>
+              <label className="label">Employee Email</label>
               <input
                 type="text"
                 className="input"
-                placeholder="Search by name..."
+                placeholder="Search by email..."
                 value={filters.employee}
                 onChange={(e) => handleFilterChange('employee', e.target.value)}
               />
@@ -108,6 +124,11 @@ export default function AttendanceReport() {
                 rowData={filteredData}
                 columnDefs={[
                   { field: 'employee', headerName: 'Employee' },
+                  { 
+                    field: 'phone', 
+                    headerName: 'Phone',
+                    valueGetter: params => usersData[params.data.employee]?.phone || 'N/A'
+                  },
                   { field: 'date', headerName: 'Date' },
                   { field: 'checkIn', headerName: 'Check In' },
                   { field: 'checkOut', headerName: 'Check Out' },

@@ -3,17 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 import { auth, db } from '../firebase';
+import { sendSMS } from '../smsService';
 
 export default function Register() {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
-    role: 'Employee',
-    workStartTime: '9:00',
-    workStartPeriod: 'AM',
-    workEndTime: '6:00',
-    workEndPeriod: 'PM'
+    phone: '',
+    role: 'Employee'
   });
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -30,15 +28,22 @@ export default function Register() {
       await setDoc(doc(db, 'users', user.uid), {
         name: formData.name,
         email: formData.email,
+        phone: formData.phone,
         role: formData.role,
-        workStartTime: `${formData.workStartTime} ${formData.workStartPeriod}`,
-        workEndTime: `${formData.workEndTime} ${formData.workEndPeriod}`,
         createdAt: new Date()
       });
       
+      // Send welcome SMS
+      const welcomeMessage = `Welcome ${formData.name}! Your account has been created successfully. You can now login to the Smart Attendance System.`;
+      await sendSMS(formData.phone, welcomeMessage);
+      
       navigate('/');
     } catch (error) {
-      setError(error.message);
+      if (error.code === 'auth/email-already-in-use') {
+        setError('This email is already registered. Please use a different email or login.');
+      } else {
+        setError(error.message);
+      }
     }
   };
 
@@ -47,105 +52,96 @@ export default function Register() {
   };
 
   return (
-    <div className="container">
-      <div className="form-card">
-        <h2>Register</h2>
-        <form onSubmit={handleRegister}>
-          <div className="form-group">
-            <label className="label" htmlFor="name">Name</label>
-            <input
-              id="name"
-              type="text"
-              className="input"
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label className="label" htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              className="input"
-              value={formData.email}
-              onChange={(e) => handleChange('email', e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label className="label" htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="input"
-              value={formData.password}
-              onChange={(e) => handleChange('password', e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label className="label" htmlFor="role">Role</label>
-            <select
-              id="role"
-              className="input"
-              value={formData.role}
-              onChange={(e) => handleChange('role', e.target.value)}
-            >
-              <option value="Employee">Employee</option>
-              <option value="Admin">Admin</option>
-            </select>
-          </div>
-          
-          <div className="form-group">
-            <label className="label">Work Start Time</label>
-            <div style={{display: 'flex', gap: '10px'}}>
+    <div style={{display: 'flex', minHeight: '100vh'}}>
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f8f9fa'
+      }}>
+        <img 
+          src="https://cdni.iconscout.com/illustration/premium/thumb/user-registration-illustration-download-in-svg-png-gif-file-formats--sign-up-form-account-creation-pack-business-illustrations-2912016.png" 
+          alt="Registration" 
+          style={{maxWidth: '80%', maxHeight: '400px', objectFit: 'contain'}}
+        />
+      </div>
+      
+      <div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', backgroundColor: 'white'}}>
+        <div className="form-card" style={{width: '100%', maxWidth: '400px', backgroundColor: 'white', color: 'black'}}>
+          <h2>Register</h2>
+          <form onSubmit={handleRegister}>
+            <div className="form-group">
+              <label className="label" htmlFor="name">Name</label>
               <input
-                type="time"
+                id="name"
+                type="text"
                 className="input"
-                value={formData.workStartTime}
-                onChange={(e) => handleChange('workStartTime', e.target.value)}
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                autoComplete="off"
+                required
               />
-              <select
+            </div>
+            <div className="form-group">
+              <label className="label" htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
                 className="input"
-                value={formData.workStartPeriod}
-                onChange={(e) => handleChange('workStartPeriod', e.target.value)}
+                value={formData.email}
+                onChange={(e) => handleChange('email', e.target.value)}
+                autoComplete="off"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="label" htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                className="input"
+                value={formData.password}
+                onChange={(e) => handleChange('password', e.target.value)}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="label" htmlFor="phone">Phone Number</label>
+              <input
+                id="phone"
+                type="tel"
+                className="input"
+                value={formData.phone}
+                onChange={(e) => handleChange('phone', e.target.value)}
+                placeholder="+1234567890"
+                autoComplete="off"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="label" htmlFor="role">Role</label>
+              <select
+                id="role"
+                className="input"
+                value={formData.role}
+                onChange={(e) => handleChange('role', e.target.value)}
               >
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
+                <option value="Employee">Employee</option>
+                <option value="Admin">Admin</option>
               </select>
             </div>
-          </div>
-          
-          <div className="form-group">
-            <label className="label">Work End Time</label>
-            <div style={{display: 'flex', gap: '10px'}}>
-              <input
-                type="time"
-                className="input"
-                value={formData.workEndTime}
-                onChange={(e) => handleChange('workEndTime', e.target.value)}
-              />
-              <select
-                className="input"
-                value={formData.workEndPeriod}
-                onChange={(e) => handleChange('workEndPeriod', e.target.value)}
-              >
-                <option value="AM">AM</option>
-                <option value="PM">PM</option>
-              </select>
+            {error && <div className="error">{error}</div>}
+            <button type="submit" className="button">
+              Register
+            </button>
+            <div className="text-center mt-4">
+              <Link to="/" className="link">
+                Already have an account? Login
+              </Link>
             </div>
-          </div>
-          {error && <div className="error">{error}</div>}
-          <button type="submit" className="button">
-            Register
-          </button>
-          <div className="text-center mt-4">
-            <Link to="/" className="link">
-              Already have an account? Login
-            </Link>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   );

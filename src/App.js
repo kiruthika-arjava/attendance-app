@@ -7,6 +7,7 @@ import ApplyLeave from './pages/ApplyLeave';
 import LeaveStatus from './pages/LeaveStatus';
 import LeaveApproval from './pages/LeaveApproval';
 import AttendanceReport from './pages/AttendanceReport';
+import Setup from './pages/Setup';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/leave-status" element={<LeaveStatus />} />
         <Route path="/leave-approval" element={<LeaveApproval />} />
         <Route path="/attendance-report" element={<AttendanceReport />} />
+        <Route path="/setup" element={<Setup />} />
       </Routes>
     </Router>
   );

@@ -31,42 +31,59 @@ export default function Login() {
   };
 
   return (
-    <div className="container">
-      <div className="form-card">
-        <h2>Login</h2>
-        <form onSubmit={handleLogin}>
-          <div className="form-group">
-            <label className="label" htmlFor="email">Email</label>
-            <input
-              id="email"
-              type="email"
-              className="input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label className="label" htmlFor="password">Password</label>
-            <input
-              id="password"
-              type="password"
-              className="input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
-          {error && <div className="error">{error}</div>}
-          <button type="submit" className="button">
-            Login
-          </button>
-          <div className="text-center mt-4">
-            <Link to="/register" className="link">
-              Don't have an account? Register
-            </Link>
-          </div>
-        </form>
+    <div style={{display: 'flex', minHeight: '100vh'}}>
+      <div style={{
+        flex: 1,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#f8f9fa'
+      }}>
+        <img 
+          src="https://cdni.iconscout.com/illustration/premium/thumb/office-team-working-illustration-download-in-svg-png-gif-file-formats--business-teamwork-collaboration-pack-people-illustrations-2912020.png" 
+          alt="Team Work" 
+          style={{maxWidth: '80%', maxHeight: '400px', objectFit: 'contain'}}
+        />
+      </div>
+      
+      <div style={{flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', backgroundColor: 'white'}}>
+        <div className="form-card" style={{width: '100%', maxWidth: '400px', backgroundColor: 'white', color: '#2d3748'}}>
+          <h2>Login</h2>
+          <form onSubmit={handleLogin}>
+            <div className="form-group">
+              <label className="label" htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                className="input"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="off"
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label className="label" htmlFor="password">Password</label>
+              <input
+                id="password"
+                type="password"
+                className="input"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            {error && <div className="error">{error}</div>}
+            <button type="submit" className="button">
+              Login
+            </button>
+            <div className="text-center mt-4">
+              <Link to="/register" className="link">
+                Don't have an account? Register
+              </Link>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   );
